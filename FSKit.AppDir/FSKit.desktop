@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Free Signage Kit
+Exec=FSKit
+Icon=app
+Type=Application
+Categories=Network;WebBrowser;
+X-AppImage-Version=0.2.0.0
