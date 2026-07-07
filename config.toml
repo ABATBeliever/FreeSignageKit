@@ -1,0 +1,83 @@
+# =====================================================================
+#  FreeSignageKit  設定ファイル (config.toml)
+# =====================================================================
+#
+#  このファイルは実行ファイル(.AppImage / .exe / FSKit.py)と
+#  同じフォルダに置いてください。
+#
+#    例) my_signage.AppImage
+#        config.toml   ← これと同じ階層に置く
+#
+#  ここに書かれている値は「デフォルト値」そのものです。
+#  config.toml が見つからない場合、FreeSignageKit はこの内容のまま
+#  動作します。書き換えたい項目だけ残して、他は削除してもかまいません
+#  (プログラム側でデフォルト値と自動的にマージされるため)。
+#
+#  値を変更したら、ブラウザを再起動すると反映されます。
+# =====================================================================
+
+
+[browser]
+# 起動時に開くホームページのURL
+home_url = "http://localhost"
+
+# 全画面表示で起動するか (true/false)
+fullscreen = true
+
+# ホームタブを縦タブ一覧に表示するか
+# false: 通常時はタブパネルを隠し、サブタブが開いたときだけ表示する
+# true : 常にホームタブも一覧に表示する
+show_home_in_tabs = false
+
+# ホームページが閉じられた/消えた場合、再表示するまでの待ち時間 (ミリ秒)
+home_retry_ms = 2000
+
+# 送信するUser-Agent文字列。空文字なら既定のChromium UAを使用
+user_agent = ""
+
+# JavaScriptを有効にするか
+javascript = true
+
+# 動画・音声の自動再生を許可するか
+autoplay = true
+
+
+[navbar]
+# ツールバー(戻る/進む/再読み込み/URLバー)を表示するか
+show = true
+
+# URL入力欄を表示するか (showがtrueの場合のみ有効)
+show_url_bar = true
+
+# 戻る/進むボタンを表示するか (showがtrueの場合のみ有効)
+show_back_forward = true
+
+# 再読み込みボタンを表示するか (showがtrueの場合のみ有効)
+show_reload = true
+
+
+[kiosk]
+# アプリを終了するショートカットキー
+exit_shortcut = "Ctrl+Shift+Q"
+
+# 右クリックメニュー(コンテキストメニュー)を無効化するか
+disable_context_menu = true
+
+
+[chromium]
+# 追加のChromium起動フラグ (スペース区切りで複数指定可能)
+# 例: extra_flags = "--disable-gpu --force-dark-mode"
+extra_flags = ""
+
+# VA-API によるハードウェア動画支援を有効にするか (Linux/組み込み向け)
+vaapi = false
+
+# GPUラスタライズを有効にするか
+gpu_rasterization = false
+
+# ゼロコピー転送を有効にするか
+zero_copy = false
+
+# 自動再生ポリシーを緩和するか (--autoplay-policy=no-user-gesture-required)
+# browser.autoplay = true の場合も自動的に有効になります
+autoplay_policy = true

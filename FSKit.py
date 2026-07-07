@@ -2,12 +2,9 @@
 FreeSignageKit
 Copyright (C) 2026 ABATBeliever
 Under LGPL v3
-
-組み込みサイネージ向け軽量ブラウザ。
-config.toml を同ディレクトリに置いて設定する。
 """
 
-APP_VERSION = "v0.2.0"
+APP_VERSION = "v0.3.0"
 APP_NAME    = f"FreeSignageKit {APP_VERSION}"
 
 import sys
@@ -30,9 +27,18 @@ print("Copyright (C) 2026 ABATBeliever. Under LGPL v3\n")
 # config.toml 読み込み
 # ─────────────────────────────────────────────
 
-_EXE_DIR = Path(sys.executable).parent.resolve() if getattr(sys, "frozen", False) \
-           else Path(__file__).parent.resolve()
+def _get_exe_dir() -> Path:
+    # AppImage 実行時: $APPIMAGE に実際の .AppImage ファイルのパスが入る
+    appimage_path = os.environ.get("APPIMAGE")
+    if appimage_path:
+        return Path(appimage_path).parent.resolve()
+    # Nuitka standalone (Windows等) / 通常のfrozen実行
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).parent.resolve()
+    # 開発時 (python FSKit.py で直接実行)
+    return Path(__file__).parent.resolve()
 
+_EXE_DIR = _get_exe_dir()
 _CONFIG_PATH = _EXE_DIR / "config.toml"
 
 _DEFAULT_CONFIG: dict = {

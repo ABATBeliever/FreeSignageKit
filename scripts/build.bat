@@ -1,2 +1,2 @@
 @echo off
-uv run nuitka --standalone --enable-plugin=pyside6 --windows-console-mode=attach --windows-icon-from-ico="img/icon-win.ico" --msvc=latest --company-name=ABATBeliever --product-name="Free Signage Kit" --file-version=0.2.0.0 --product-version=0.2.0.0 --file-description="Free Signage Kit" --copyright="Copyright (C) 2026 ABATBeliever" --remove-output FSKit.py
+uv run nuitka --standalone --enable-plugin=pyside6 --windows-console-mode=attach --windows-icon-from-ico="img/icon-win.ico" --msvc=latest --company-name=ABATBeliever --product-name="Free Signage Kit" --file-version=0.3.0.0 --product-version=0.3.0.0 --file-description="Free Signage Kit" --copyright="Copyright (C) 2026 ABATBeliever" --remove-output FSKit.py

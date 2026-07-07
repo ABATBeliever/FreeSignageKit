@@ -27,7 +27,6 @@ uv run nuitka \
     --company-name=ABATBeliever \
     --product-name="Free Signage Kit" \
     --file-description="Free Signage Kit" \
-    --include-data-dir=resources/pdfjs=resources/pdfjs \
     FSKit.py
 
 echo "[INFO] Building binary OK"
