@@ -1,7 +1,7 @@
 # Free Signage Kit - サイネージを作ろう
 
 ![License](https://img.shields.io/badge/license-LGPLv3-blue.svg)
-![Version](https://img.shields.io/badge/version-0.3.0.0-green.svg)
+![Version](https://img.shields.io/badge/version-0.4.0.0-green.svg)
 ![Version](https://img.shields.io/badge/Language-Python-yellow.svg)
 
 ---
@@ -30,12 +30,20 @@ Python, PySide6 そしてChromium エンジンを採用する LGPLライセン�
 ## 特徴
 
 - **キオスク運用向け**
-  右クリックメニューの無効化、ダウンロードのブロック、ホームページ消失時の自動リロード
+  右クリックメニューの無効化、ホームページ消失・読み込み失敗時の自動リロード(指数バックオフ方式)
+- **レンダラークラッシュからの自動復旧**
+  ページの描画プロセスがクラッシュした場合も、タブを自動的に再生成して復旧します
+- **ドメインホワイトリストによるアクセス制御**
+  ダウンロード先ホスト、マイク/カメラ/位置情報へのアクセス許可を、それぞれ許可ドメインのリストで制御可能(既定はすべて拒否)
+- **自動フルリスタート**
+  一定間隔、または指定時刻でアプリ自体を丸ごと再起動する機能を搭載(長時間稼働によるメモリ増大等のリセット用途)
 - **縦タブ**
   `target="_blank"` などで開かれた新規ウィンドウを縦タブとして表示
   (ホームタブのみの間はタブパネル自体を非表示にすることも可能)
 - **ポータブル**
   プロファイル(Cookie/キャッシュ)は実行ファイルと同じフォルダの`.fsk_profile` に保存され、USBメモリなどでの持ち運びに対応
+- **ログレベル調整**
+  `debug`/`info`/`warn`/`error` の4段階でログ出力量を制御でき、24時間稼働時のディスクI/Oを抑制可能
 - **Chromiumフラグの調整**
   チューニングを `config.toml` から有効化可能
 
@@ -83,7 +91,8 @@ call ./scripts/devkit-win.bat
 | `[browser]` | `home_url` | `"http://localhost"` | 起動時に開くホームページURL |
 | | `fullscreen` | `true` | 全画面表示で起動するか |
 | | `show_home_in_tabs` | `false` | ホームタブを縦タブ一覧に常時表示するか |
-| | `home_retry_ms` | `2000` | ホームが消えてから再表示するまでの待ち時間(ms) |
+| | `home_retry_ms` | `2000` | ホーム再試行の初回待ち時間(ms)。失敗するたびに指数バックオフ(2倍ずつ)で延び、成功するとリセットされる |
+| | `home_retry_max_ms` | `60000` | `home_retry_ms` の指数バックオフの上限(ms) |
 | | `user_agent` | `""` | 送信するUser-Agent(空なら既定のChromium UA) |
 | | `javascript` | `true` | JavaScriptを有効にするか |
 | | `autoplay` | `true` | 動画・音声の自動再生を許可するか |
@@ -93,11 +102,20 @@ call ./scripts/devkit-win.bat
 | | `show_reload` | `true` | 再読み込みボタンを表示するか |
 | `[kiosk]` | `exit_shortcut` | `"Ctrl+Shift+Q"` | アプリを終了するショートカット |
 | | `disable_context_menu` | `true` | 右クリックメニューを無効化するか |
+| | `restart_interval_hours` | `0` | アプリ自体を丸ごと再起動する間隔(時間)。`0`以下で無効 |
+| | `restart_at` | `""` | 再起動を実行する時刻(`"HH:MM"`、24時間表記)。空なら経過時間のみで即再起動 |
 | `[chromium]` | `extra_flags` | `""` | 追加のChromium起動フラグ(スペース区切り) |
 | | `vaapi` | `false` | VA-APIによるハードウェア動画支援 |
 | | `gpu_rasterization` | `false` | GPUラスタライズ |
 | | `zero_copy` | `false` | ゼロコピー転送 |
 | | `autoplay_policy` | `true` | 自動再生ポリシーの緩和 |
+| `[downloads]` | `allowed_domains` | `[]` | ダウンロードを許可するホストのリスト(`"*"`で全許可、空で全拒否) |
+| `[permissions]` | `microphone` | `[]` | マイクへのアクセスを許可するホストのリスト(`"*"`指定不可) |
+| | `camera` | `[]` | カメラへのアクセスを許可するホストのリスト(`"*"`指定不可) |
+| | `geolocation` | `[]` | 位置情報へのアクセスを許可するホストのリスト(`"*"`指定不可) |
+| `[logging]` | `level` | `"info"` | ログ出力レベル(`debug`/`info`/`warn`/`error`) |
+
+ホスト指定は完全一致のほか、`*.example.com` のようなサブドメインワイルドカードにも対応しています。
 
 ### キーボードショートカット
 
@@ -113,11 +131,13 @@ call ./scripts/devkit-win.bat
 
 ## 注意事項
 
-- サイネージ用途を想定しているため、ページ内リンクからのファイルダウンロードはキャンセルされます。
-- 新しいタブ/ウィンドウの許可要求(通知・位置情報など)は既定で拒否されます。
+- サイネージ用途を想定しているため、ページ内リンクからのファイルダウンロードは既定ですべて拒否されます。許可したい場合は `[downloads] allowed_domains` にホストを追加してください。
+- マイク/カメラ/位置情報へのアクセス要求は既定ですべて拒否されます。許可したい場合は `[permissions]` の対応する項目にホストを追加してください(通知など上記以外の許可要求は常に拒否されます)。
 - `config.toml`は正しく設定してください。
   - 読み取り専用にしておくことを推奨します。
   - 終了するためのショートカットは変更することを推奨します。
+  - `restart_interval_hours` を有効にする場合、利用者への影響が少ない時間帯を `restart_at` で指定することを推奨します。
+  - 24時間稼働でログをファイルに保存する場合は、`[logging] level` を `"warn"` 程度に絞ることでディスクI/Oを抑えられます。
 
 ---
 
