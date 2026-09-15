@@ -69,7 +69,7 @@ echo " Run:"
 echo "   uv run python FSKit.py"
 echo
 echo " Build: (AppImage)"
-echo "   ./scripts/build-linux-x64-appimage.sh"
+echo "   ./scripts/build-linux-amd64.sh"
 echo
 
 exec bash

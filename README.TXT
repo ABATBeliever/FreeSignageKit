@@ -1,6 +1,6 @@
 【ソフト名称】FSKit
-【バージョン】0.4.0.0
-【最終更新日】2026/08/31
+【バージョン】0.4.1.0
+【最終更新日】2026/09/15
 【 著 作 者 】ABATBeliever
 【 動作環境 】Windows10+ / Linux (AppImageサポート必須)
 【 推奨環境 】Windows10+ / Linux (Wayland推奨)

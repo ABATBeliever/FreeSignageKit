@@ -1,7 +1,7 @@
 # Free Signage Kit - サイネージを作ろう
 
 ![License](https://img.shields.io/badge/license-LGPLv3-blue.svg)
-![Version](https://img.shields.io/badge/version-0.4.0.0-green.svg)
+![Version](https://img.shields.io/badge/version-0.4.1.0-green.svg)
 ![Version](https://img.shields.io/badge/Language-Python-yellow.svg)
 
 ---
